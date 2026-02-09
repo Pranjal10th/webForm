@@ -1,83 +1,153 @@
-from flask import Flask, render_template, request, redirect
-import csv
-import os
-import pandas as pd
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registration</title>
 
-app = Flask(__name__)
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
-# ---------------- FORM PAGE ----------------
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    if request.method == 'POST':
-        first_name = request.form.get('first_name', '').strip()
-        last_name = request.form.get('last_name', '').strip()
-        dob = request.form.get('dob', '').strip()
-        mobile = request.form.get('mobile', '').strip()
-        address = request.form.get('address', '').strip()
-        father_name = request.form.get('father_name', '').strip()
-        mother_name = request.form.get('mother_name', '').strip()
-        aadhaar = request.form.get('aadhaar', '').strip()
+<style>
+body{
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg,#7ee8fa,#80ffdb);
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  margin:0;
+}
 
-        # Create data folder
-        os.makedirs('data', exist_ok=True)
-        file_path = os.path.join('data', 'data.csv')
+.card{
+  background:#fff;
+  width:900px;
+  max-width:95%;
+  display:flex;
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow:0 20px 40px rgba(0,0,0,.15);
+}
 
-        # Save data to CSV
-        file_exists = os.path.isfile(file_path)
-        with open(file_path, mode='a', newline='', encoding='utf-8') as file:
-            writer = csv.writer(file)
+/* LEFT IMAGE */
+.left{
+  width:45%;
+  background:url("https://images.unsplash.com/photo-1519681393784-d120267933ba") center/cover no-repeat;
+}
 
-            if not file_exists:
-                writer.writerow([
-                    'First Name',
-                    'Last Name',
-                    'Date of Birth',
-                    'Mobile',
-                    'Address',
-                    'Father Name',
-                    'Mother Name',
-                    'Aadhaar'
-                ])
+/* RIGHT FORM */
+.right{
+  width:55%;
+  padding:40px;
+}
 
-            writer.writerow([
-                first_name,
-                last_name,
-                dob,
-                mobile,
-                address,
-                father_name,
-                mother_name,
-                aadhaar
-            ])
+h2{
+  margin-bottom:25px;
+  font-weight:600;
+}
 
-        return redirect('/success')
+.row{
+  display:flex;
+  gap:15px;
+}
 
-    return render_template('form.html')
+.field{
+  flex:1;
+}
 
+label{
+  font-size:13px;
+  font-weight:600;
+  display:block;
+  margin-bottom:5px;
+}
 
-# ---------------- SUCCESS PAGE ----------------
-@app.route('/success')
-def success():
-    return """
-    <h2 style='text-align:center; color:green;'>✅ Form submitted successfully!</h2>
-    <p style='text-align:center;'>
-        <a href='/'>Go Back</a> | 
-        <a href='/admin'>View Submissions</a>
-    </p>
-    """
+input{
+  width:100%;
+  padding:11px;
+  border-radius:8px;
+  border:1px solid #ccc;
+  font-size:14px;
+  margin-bottom:15px;
+}
 
-# --- ADMIN PAGE ---
-ADMIN_KEY = "12345"
-@app.route('/admin')
-def admin():
-    file_path = os.path.join('data', 'data.csv')
-    if not os.path.exists(file_path):
-        return "<h3 style='text-align:center; color:red;'>No data found yet!</h3><p style='text-align:center;'><a href='/'>Go Back</a></p>"
+button{
+  width:100%;
+  padding:14px;
+  background:#1a3c7c;
+  color:#fff;
+  border:none;
+  border-radius:10px;
+  font-size:16px;
+  cursor:pointer;
+  margin-top:10px;
+}
 
-    df = pd.read_csv(file_path)
-    records = df.to_dict(orient='records')
-    headers = df.columns.tolist()
-    return render_template('admin.html', headers=headers, records=records)
+button:hover{
+  background:#102b5f;
+}
 
-if __name__ == '__main__':
-    app.run(debug=True)
+/* MOBILE */
+@media(max-width:768px){
+  .card{flex-direction:column;}
+  .left{height:200px;width:100%;}
+  .right{width:100%;}
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <div class="left"></div>
+
+  <div class="right">
+    <h2>Registration</h2>
+
+    <form method="POST" action="/">
+
+      <div class="row">
+        <div class="field">
+          <label>First Name</label>
+          <input type="text" name="first_name" required>
+        </div>
+        <div class="field">
+          <label>Last Name</label>
+          <input type="text" name="last_name" required>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label>Date of Birth</label>
+          <input type="text" name="dob" required>
+        </div>
+        <div class="field">
+          <label>Mobile</label>
+          <input type="tel" name="mobile" pattern="[0-9]{10}" required>
+        </div>
+      </div>
+
+      <label>Address</label>
+      <input type="text" name="address" required>
+
+      <div class="row">
+        <div class="field">
+          <label>Father's Name</label>
+          <input type="text" name="father_name" required>
+        </div>
+        <div class="field">
+          <label>Mother's Name</label>
+          <input type="text" name="mother_name" required>
+        </div>
+      </div>
+
+      <label>Aadhaar Number</label>
+      <input type="text" name="aadhaar" pattern="[0-9]{12}" required>
+
+      <button type="submit">SUBMIT</button>
+    </form>
+  </div>
+</div>
+
+</body>
+</html>
