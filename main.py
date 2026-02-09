@@ -5,39 +5,65 @@ import pandas as pd
 
 app = Flask(__name__)
 
-# --- FORM PAGE ---
+# ---------------- FORM PAGE ----------------
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-        name = request.form.get('name', '').strip()
+        first_name = request.form.get('first_name', '').strip()
+        last_name = request.form.get('last_name', '').strip()
         dob = request.form.get('dob', '').strip()
         mobile = request.form.get('mobile', '').strip()
         address = request.form.get('address', '').strip()
         father_name = request.form.get('father_name', '').strip()
+        mother_name = request.form.get('mother_name', '').strip()
         aadhaar = request.form.get('aadhaar', '').strip()
 
-        # Create data folder if it doesn’t exist
+        # Create data folder
         os.makedirs('data', exist_ok=True)
         file_path = os.path.join('data', 'data.csv')
 
-        # Save to CSV
+        # Save data to CSV
         file_exists = os.path.isfile(file_path)
         with open(file_path, mode='a', newline='', encoding='utf-8') as file:
             writer = csv.writer(file)
+
             if not file_exists:
-                writer.writerow(['Name', 'Date of Birth', 'Mobile', 'Address', 'Father Name', 'Aadhaar'])
-            writer.writerow([name, dob, mobile, address, father_name, aadhaar])
+                writer.writerow([
+                    'First Name',
+                    'Last Name',
+                    'Date of Birth',
+                    'Mobile',
+                    'Address',
+                    'Father Name',
+                    'Mother Name',
+                    'Aadhaar'
+                ])
+
+            writer.writerow([
+                first_name,
+                last_name,
+                dob,
+                mobile,
+                address,
+                father_name,
+                mother_name,
+                aadhaar
+            ])
 
         return redirect('/success')
 
     return render_template('form.html')
 
-# --- SUCCESS PAGE ---
+
+# ---------------- SUCCESS PAGE ----------------
 @app.route('/success')
 def success():
     return """
     <h2 style='text-align:center; color:green;'>✅ Form submitted successfully!</h2>
-    <p style='text-align:center;'><a href='/'>Go Back</a> | <a href='/admin'>View Submissions</a></p>
+    <p style='text-align:center;'>
+        <a href='/'>Go Back</a> | 
+        <a href='/admin'>View Submissions</a>
+    </p>
     """
 
 # --- ADMIN PAGE ---
@@ -55,3 +81,4 @@ def admin():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
